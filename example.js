@@ -1,6 +1,7 @@
 var
   MyQ = require('liftmaster'),
-  garageDoor = new MyQ('chad@developer.email', 'correct horse battery staple'),
+  util = require('util'),
+  garageDoor = new MyQ('username', 'password'),
   doorStates = {
     '1': 'open',
     '2': 'closed',
@@ -8,30 +9,29 @@ var
     '5': 'closing'
   };
 
+
 // log in to MyQ
-garageDoor.login(function(err, res) {
-  if(err) throw err;
+garageDoor.login(function(err) {
+  if(!!err) return console.log(err);
 
   // get all garage door devices
   garageDoor.getDevices(function(err, devices) {
-    if(err) throw err;
+    if(!!err) return console.log(err);
+
+    console.log(util.inspect(devices, { depth: null }));
 
     // log each door state
     devices.forEach(function(device) {
-      console.log(device.name, doorStates[device.state]);
-    });
+      console.log(util.inspect(device, { depth: null }));
+      console.log('    doorState=' + doorStates[device.state]);
 
-    // get the status of a single door
-    var device = devices[0];
-    garageDoor.getDoorState(device.id, function(err, device) {
-      if(err) throw err;
-      console.log(device);
-    });
+      garageDoor.getDoorState(device.id, function(err, door) {
+        console.log('>>> getDoorState ' + device.id + ' !!err=' + (!!err) + ' !!door=' + (!!door));
+        if(!!err) return console.log(err);
 
-    // open that door
-    garageDoor.setDoorState(device.id, 1, function(err, device) {
-      if(err) throw err;
-      console.log(device);
+        console.log(util.inspect(door, { depth: null }));
+        console.log('    state=' + doorStates[door.state]);
+      });
     });
   });
 });
