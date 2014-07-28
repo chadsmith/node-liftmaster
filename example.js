@@ -26,7 +26,6 @@ garageDoor.login(function(err) {
       console.log('    doorState=' + doorStates[device.state]);
 
       garageDoor.getDoorState(device.id, function(err, door) {
-        console.log('>>> getDoorState ' + device.id + ' !!err=' + (!!err) + ' !!door=' + (!!door));
         if(!!err) return console.log(err);
 
         console.log(util.inspect(door, { depth: null }));
