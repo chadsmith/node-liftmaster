@@ -7,7 +7,7 @@
   "name": "liftmaster",
   "description": "Control your LiftMaster MyQ garage door openers",
   "keywords": ["liftmaster", "myq", "garage door"],
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/chadsmith/node-liftmaster",
   "repository": {
     "type": "git",

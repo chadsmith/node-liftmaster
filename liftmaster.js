@@ -15,7 +15,7 @@ MyQ.prototype.login = function(callback) {
     method: 'GET',
     uri: _self.endpoint + '/api/user/validatewithculture',
     headers: {
-      'User-Agent': _self.brandID + '/1332 (iPhone; iOS 7.1.1; Scale/2.00)'
+      'User-Agent' : _self.brandID + '/1332 (iPhone; iOS 7.1.1; Scale/2.00)'
     },
     qs: {
       appId: _self.appId,
@@ -36,6 +36,8 @@ MyQ.prototype.login = function(callback) {
 
     callback(null, body);
   });
+
+  return _self;
 };
 
 MyQ.prototype.getDevices = function(callback) {
@@ -54,7 +56,7 @@ MyQ.prototype.getDevices = function(callback) {
     method: 'GET',
     uri: _self.endpoint + '/api/userdevicedetails/get',
     headers: {
-      'User-Agent': _self.brandID + '/1332 (iPhone; iOS 7.1.1; Scale/2.00)'
+      'User-Agent' : _self.brandID + '/1332 (iPhone; iOS 7.1.1; Scale/2.00)'
     },
     qs: {
       appId: _self.appId,
@@ -81,7 +83,7 @@ MyQ.prototype.getDevices = function(callback) {
       });
       _self.gateways.push(gateway);
       gateway.devices.forEach(function(deviceId) {
-        if ((!!response) && (response.indexOf(deviceId) === -1)) return;
+        if ((!!response) && (response.indexOf(deviceId) !== -1)) return;
 
         _self.children[deviceId] = { location: gateway.name };
       });
@@ -111,6 +113,8 @@ MyQ.prototype.getDevices = function(callback) {
 
     callback(null, _self.devices);
   });
+
+  return _self;
 };
 
 MyQ.prototype.getDoorState = function(deviceId, callback) {
@@ -129,7 +133,7 @@ MyQ.prototype.getDoorState = function(deviceId, callback) {
     method: 'GET',
     uri: _self.endpoint + '/api/deviceattribute/getdeviceattribute',
     headers: {
-      'User-Agent': _self.brandID + '/1332 (iPhone; iOS 7.1.1; Scale/2.00)'
+      'User-Agent' : _self.brandID + '/1332 (iPhone; iOS 7.1.1; Scale/2.00)'
     },
     qs: {
       appId: _self.appId,
@@ -150,9 +154,10 @@ MyQ.prototype.getDoorState = function(deviceId, callback) {
       }
     });
   });
-};
 
-MyQ.prototype.setDoorState = function(deviceId, state, callback) {
+  return _self;
+};
+MyQ.prototype.setDoorState = function(deviceId, openP, callback, fastP) {
   var _self = this;
 
   if(!_self.securityToken) callback(new Error('not logged in'));
@@ -167,26 +172,33 @@ MyQ.prototype.setDoorState = function(deviceId, state, callback) {
   request({
     method: 'PUT',
     uri: _self.endpoint + '/api/deviceattribute/putdeviceattribute',
+    headers: {
+      'User-Agent'   : _self.brandID + '/1332 (iPhone; iOS 7.1.1; Scale/2.00)',
+      'Content-Type' : 'application/json; charset=utf-8'
+    },
     body: {
+      ApplicationId: _self.appId,
       DeviceId: deviceId,
+      securityToken: _self.securityToken,
       AttributeName: 'desireddoorstate',
-      AttributeValue: state,
-      securityToken: _self.securityToken
+      AttributeValue: openP ? '1' : '0'
     },
     json: true
   }, function(err, res, body) {
     if(err || body.Message || body.ErrorMessage)
       return callback(err || new Error(body.Message || body.ErrorMessage));
 
+    if (typeof fastP !== 'undefined') return callback(err, body);
     setTimeout(function() {
       _self._loopDoorState(deviceId, callback);
     }, 1000);
   });
+
+  return _self;
 };
 
 MyQ.prototype._loopDoorState = function(deviceId, callback) {
   var _self = this;
-
 
   _self.getDoorState(deviceId, function(err, res) {
     if(err)

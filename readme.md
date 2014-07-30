@@ -43,13 +43,15 @@ Retrieves the latest state of the requested door.
         console.log(device);
       });
 
-### garageDoor.setDoorState(id, state, callback)
-
-Set the requested door to open or close. Returns an updated state once complete.
-
 Known door states: 1 = open, 2 = closed, 4 = opening, 5 = closing
 
-      garageDoor.setDoorState(device.id, 1, function(err, device) {
+### garageDoor.setDoorState(id, state, callback, fastP)
+
+Set the requested door to open or close. 
+If the fastP parameter is not present, then returns an updated state once complete;
+otherwise returns immediately.
+
+      garageDoor.setDoorState(device.id, openP, function(err, device) {
         if(err) throw err;
         console.log(device);
       });
