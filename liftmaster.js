@@ -165,7 +165,7 @@ MyQ.prototype.setDoorState = function(deviceId, openP, callback, fastP) {
     return _self.login(function(err) {
       if(!!err) return callback(err);
 
-      _self.setDoorState(deviceId, state, callback);
+      _self.setDoorState(deviceId, openP, callback, fastP);
     });
   }
 
