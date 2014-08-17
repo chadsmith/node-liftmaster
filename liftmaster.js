@@ -76,11 +76,13 @@ MyQ.prototype.getDevices = function(callback) {
         id: Device.DeviceId, type: 'gateway', serialNo: Device.SerialNumber, name: Device.DeviceName, devices: []
       };
       var response;
-      Device.Attributes.forEach(function(attribute) {
-        if(attribute.Name === 'desc') gateway.name = attribute.Value;
-        else if(attribute.Name === 'devices') gateway.devices = attribute.Value.split(',');
-        else if(attribute.Name === 'deviceRecord.response') response = attribute.Value;
-      });
+      if (!!Device.Attributes) {
+        Device.Attributes.forEach(function(attribute) {
+          if(attribute.Name === 'desc') gateway.name = attribute.Value;
+          else if(attribute.Name === 'devices') gateway.devices = attribute.Value.split(',');
+          else if(attribute.Name === 'deviceRecord.response') response = attribute.Value;
+        });
+      }
       _self.gateways.push(gateway);
       gateway.devices.forEach(function(deviceId) {
         if ((!!response) && (response.indexOf(deviceId) !== -1)) return;
